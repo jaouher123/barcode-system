@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
 // CORS — allow Angular dev server
 builder.Services.AddCors(opt =>
     opt.AddPolicy("Angular", policy => policy
-        .WithOrigins("http://localhost:4200")
+        .WithOrigins("http://localhost:4200", "https://barcode-system.vercel.app", "https://barcode-system-jaouher123.vercel.app")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()   // required for SignalR

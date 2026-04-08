@@ -20,7 +20,7 @@ export class RealtimeService implements OnDestroy {
 
   private connect(): void {
     this.hub = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/hubs/barcode')
+      .withUrl('https://barcode-system-api.onrender.com/hubs/barcode')
       .withAutomaticReconnect()
       .build();
 

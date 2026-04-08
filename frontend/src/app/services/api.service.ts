@@ -8,7 +8,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly base = 'http://localhost:5000/api';
+  private readonly base = 'https://barcode-system-api.onrender.com/api';
   private http = inject(HttpClient);
 
   // ── Scans ──────────────────────────────────────────────────────────────────
