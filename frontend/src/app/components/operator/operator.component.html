@@ -1,0 +1,104 @@
+<!-- src/app/components/operator/operator.component.html -->
+<div class="operator-page">
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-label">Total</span>
+      <span class="stat-value">{{ stats.total }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">OK</span>
+      <span class="stat-value ok">{{ stats.totalOK }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">NOK</span>
+      <span class="stat-value nok">{{ stats.totalNOK }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Taux d'erreur</span>
+      <span class="stat-value nok">{{ stats.errorRate | number:'1.1-1' }}%</span>
+    </div>
+  </div>
+
+  <!-- Result banner -->
+  <div class="result-banner"
+       [class.ok-result]="lastScan?.result === 'OK'"
+       [class.nok-result]="lastScan?.result === 'NOK'"
+       [class.idle]="!lastScan">
+    <div class="result-icon" [class.ok]="lastScan?.result === 'OK'" [class.nok]="lastScan?.result === 'NOK'">
+      <span *ngIf="!lastScan">▶</span>
+      <span *ngIf="lastScan?.result === 'OK'">✓</span>
+      <span *ngIf="lastScan?.result === 'NOK'">✗</span>
+    </div>
+    <div class="result-text">
+      <p class="result-main" [class.ok]="lastScan?.result === 'OK'" [class.nok]="lastScan?.result === 'NOK'">
+        <ng-container [ngSwitch]="state">
+          <ng-container *ngSwitchCase="'waiting-first'">En attente du premier scan</ng-container>
+          <ng-container *ngSwitchCase="'waiting-second'">En attente du second scan</ng-container>
+          <ng-container *ngSwitchCase="'result'">
+            {{ lastScan?.result === 'OK' ? 'OK — Codes identiques' : 'NOK — Codes différents' }}
+          </ng-container>
+        </ng-container>
+      </p>
+      <p class="result-sub" *ngIf="lastScan">
+        "{{ lastScan.barcode1 }}" vs "{{ lastScan.barcode2 }}"
+      </p>
+    </div>
+  </div>
+
+  <!-- Scan inputs -->
+  <div class="scan-area">
+    <div class="scan-box">
+      <label class="scan-label">
+        <span class="dot" [class.active]="state === 'waiting-first'" [class.done]="state !== 'waiting-first'"></span>
+        Premier code-barres
+      </label>
+      <input class="scan-input" [(ngModel)]="barcode1"
+             [disabled]="state !== 'waiting-first'"
+             placeholder="Scan 1..."
+             (keyup.enter)="onBarcode1Enter()"
+             autofocus />
+    </div>
+    <div class="scan-box">
+      <label class="scan-label">
+        <span class="dot" [class.active]="state === 'waiting-second'"></span>
+        Second code-barres
+      </label>
+      <input class="scan-input" [(ngModel)]="barcode2"
+             [disabled]="state !== 'waiting-second'"
+             placeholder="Scan 2..."
+             (keyup.enter)="onBarcode2Enter()" />
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="btn-row">
+    <button class="btn" (click)="reset()">Réinitialiser</button>
+    <button class="btn primary" (click)="exportExcel()">Exporter Excel</button>
+  </div>
+
+  <!-- Recent history -->
+  <h3 class="section-title">Historique récent</h3>
+  <div class="history-table-wrap">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Heure</th><th>Code 1</th><th>Code 2</th><th>Résultat</th><th>Appareil</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of recentHistory">
+          <td>{{ s.scannedAt | date:'HH:mm:ss' }}</td>
+          <td class="mono">{{ s.barcode1 }}</td>
+          <td class="mono">{{ s.barcode2 }}</td>
+          <td><span class="badge" [class.ok]="s.result==='OK'" [class.nok]="s.result==='NOK'">{{ s.result }}</span></td>
+          <td>{{ s.deviceName || '—' }}</td>
+        </tr>
+        <tr *ngIf="recentHistory.length === 0">
+          <td colspan="5" class="empty">Aucun scan enregistré</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

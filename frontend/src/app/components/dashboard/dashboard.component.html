@@ -1,0 +1,69 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
+<div class="dashboard-page">
+
+  <!-- Global counters -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-label">Total aujourd'hui</span>
+      <span class="stat-value">{{ stats.total }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">OK</span>
+      <span class="stat-value ok">{{ stats.totalOK }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">NOK</span>
+      <span class="stat-value nok">{{ stats.totalNOK }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Taux d'erreur</span>
+      <span class="stat-value nok">{{ stats.errorRate | number:'1.1-1' }}%</span>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="charts-row">
+    <div class="card">
+      <p class="card-title">Scans par heure</p>
+      <div class="chart-wrap">
+        <canvas #chartHour></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Taux d'erreur (%)</p>
+      <div class="chart-wrap">
+        <canvas #chartError></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed + Devices row -->
+  <div class="bottom-row">
+    <div class="card">
+      <p class="card-title">Activité en direct</p>
+      <div *ngFor="let s of activityFeed" class="activity-item">
+        <span class="activity-time">{{ s.scannedAt | date:'HH:mm:ss' }}</span>
+        <span class="activity-code">{{ s.barcode1 }}</span>
+        <span class="badge" [class.ok]="s.result==='OK'" [class.nok]="s.result==='NOK'">{{ s.result }}</span>
+        <span class="activity-device">{{ s.deviceName || '' }}</span>
+      </div>
+      <p class="empty" *ngIf="activityFeed.length === 0">Aucune activité récente</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Statut des appareils</p>
+      <div *ngFor="let d of devices" class="device-row">
+        <div>
+          <p class="device-name">{{ d.name }}</p>
+          <p class="device-location">{{ d.location }}</p>
+        </div>
+        <span class="device-status">
+          <span class="status-dot" [class.online]="d.isOnline" [class.offline]="!d.isOnline"></span>
+          {{ d.isOnline ? 'En ligne' : 'Hors ligne' }}
+        </span>
+      </div>
+      <p class="empty" *ngIf="devices.length === 0">Aucun appareil</p>
+    </div>
+  </div>
+
+</div>

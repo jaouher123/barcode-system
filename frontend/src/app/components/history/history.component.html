@@ -1,0 +1,70 @@
+<!-- src/app/components/history/history.component.html -->
+<div class="history-page">
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <input
+      class="filter-input"
+      [(ngModel)]="filter.searchCode"
+      placeholder="Rechercher un code-barres..."
+      (keyup.enter)="onSearch()" />
+
+    <select class="filter-select" [(ngModel)]="filter.result" (change)="onSearch()">
+      <option value="">Tous les résultats</option>
+      <option value="OK">OK</option>
+      <option value="NOK">NOK</option>
+    </select>
+
+    <input class="filter-input" type="date" [(ngModel)]="filter.dateFrom" (change)="onSearch()" />
+    <input class="filter-input" type="date" [(ngModel)]="filter.dateTo"   (change)="onSearch()" />
+
+    <button class="btn" (click)="onSearch()">Filtrer</button>
+    <button class="btn primary" (click)="exportExcel()">Exporter Excel</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date / Heure</th>
+          <th>Code 1</th>
+          <th>Code 2</th>
+          <th>Résultat</th>
+          <th>Appareil</th>
+          <th>Opérateur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of scans">
+          <td class="mono muted">{{ s.id }}</td>
+          <td class="mono">{{ s.scannedAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="mono">{{ s.barcode1 }}</td>
+          <td class="mono">{{ s.barcode2 }}</td>
+          <td>
+            <span class="badge" [class.ok]="s.result==='OK'" [class.nok]="s.result==='NOK'">
+              {{ s.result }}
+            </span>
+          </td>
+          <td>{{ s.deviceName || '—' }}</td>
+          <td>{{ s.username  || '—' }}</td>
+        </tr>
+        <tr *ngIf="!loading && scans.length === 0">
+          <td colspan="7" class="empty">Aucun résultat trouvé</td>
+        </tr>
+        <tr *ngIf="loading">
+          <td colspan="7" class="empty">Chargement...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="btn" (click)="prevPage()" [disabled]="filter.page === 1">← Précédent</button>
+    <span class="page-info">Page {{ filter.page }}</span>
+    <button class="btn" (click)="nextPage()" [disabled]="scans.length < filter.pageSize">Suivant →</button>
+  </div>
+
+</div>
